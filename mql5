@@ -1,0 +1,96 @@
+
+// Developer: Forex Robot Easy Team
+// Developer's Site: forexroboteasy.com
+
+// Include necessary libraries and dependencies
+#include <Telegram.mqh>
+#include <ChartObjects.mqh>
+
+// Initialize the Telegram API
+CTelegram telegram;
+
+// Initialize the screen sharing function
+void ShareScreenToTelegram()
+{
+    // Capture the trader's screen
+    int screenWidth = ChartScreenShot(0, 0, ChartWidth(), ChartHeight(), 'screenshot.png');
+
+    // Check if the screen capture was successful
+    if(screenWidth > 0)
+    {
+        // Send the screenshot to Telegram
+        telegram.SendPhoto('telegram_username', 'screenshot.png', 'Screen capture');
+
+        // Delete the screenshot file
+        FileDelete('screenshot.png');
+    }
+    else
+    {
+        // Display an error message if the screen capture failed
+        Print('Error capturing screen. Please try again.');
+    }
+}
+
+// Initialize the real-time communication function
+void RealTimeCommunication()
+{
+    // Connect to the Telegram chat
+    telegram.ConnectChat('telegram_chat_id');
+
+    // Listen for incoming messages
+    while(telegram.HasMessage())
+    {
+        // Get the incoming message
+        CTelegramMessage message = telegram.GetMessage();
+
+        // Process the message and execute trading strategies
+        // Add your trading strategy code here
+
+        // Reply to the message
+        telegram.SendMessage(message.chat_id, 'Your message has been received and processed.');
+    }
+}
+
+// Initialize the market analysis function
+void MarketAnalysis()
+{
+    // Add your technical analysis code here
+    // Implement charting, indicators, and price alerts
+
+    // Example: Plot a moving average on the chart
+    int maHandle = iMA(Symbol(), PERIOD_CURRENT, 14, 0, MODE_SMA, PRICE_CLOSE);
+    ChartIndicatorAdd(0, maHandle);
+
+    // Example: Set a price alert
+    double alertPrice = iClose(Symbol(), PERIOD_CURRENT, 1) + 10 * Point;
+    Alert(Symbol(), 'Price above ', alertPrice);
+}
+
+// Initialize the trade execution function
+void TradeExecution()
+{
+    // Add your trade execution code here
+    // Implement market orders, limit orders, stop orders, etc.
+
+    // Example: Place a market order
+    OrderSend(Symbol(), OP_BUY, 0.1, Ask, 3, Bid-10*Point, Bid+10*Point, 'Buy order', MagicNumber, 0, Green);
+
+    // Example: Place a limit order
+    OrderSend(Symbol(), OP_SELLLIMIT, 0.1, Bid+10*Point, 3, 0, 0, 'Sell limit order', MagicNumber, 0, Red);
+}
+
+// Main function to run the program
+void OnStart()
+{
+    // Share screen to Telegram
+    ShareScreenToTelegram();
+
+    // Real-time communication
+    RealTimeCommunication();
+
+    // Market analysis
+    MarketAnalysis();
+
+    // Trade execution
+    TradeExecution();
+}
